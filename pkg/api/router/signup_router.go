@@ -11,7 +11,7 @@ import (
 
 func NewSignupRouter(timeout time.Duration, gr *gin.RouterGroup) {
 	ur := repos.NewUserRepository()
-	sc := &controller.SignupController{ SignupUsecase: usecases.NewSignupUseCase(ur, timeout) }
+	sc := &controller.SignupController{SignupUsecase: usecases.NewSignupUseCase(ur, timeout)}
 
-	gr.POST("/signup", sc.SignupEmail)
+	gr.POST("/signup", sc.Signup)
 }

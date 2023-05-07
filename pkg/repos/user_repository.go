@@ -2,7 +2,6 @@ package repos
 
 import (
 	"context"
-	"errors"
 
 	"github.com/robert-tyssen/go-auth-jwt-demo/pkg/domain"
 )
@@ -15,5 +14,6 @@ func NewUserRepository() domain.UserRepository {
 
 func (ur *userRepository) Create(c context.Context, user *domain.User) error {
 	// TODO - implement user creation
-	return errors.New("NOT IMPLEMENTED")
+	//return errors.New("user-repo-create-not-implemented")
+	return nil
 }

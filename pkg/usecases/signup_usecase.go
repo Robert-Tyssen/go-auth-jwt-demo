@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/robert-tyssen/go-auth-jwt-demo/pkg/domain"
+	"github.com/robert-tyssen/go-auth-jwt-demo/pkg/internal/tokenutil"
 )
 
 type signupUseCase struct {
@@ -25,4 +26,12 @@ func (su *signupUseCase) CreateUser(c context.Context, user *domain.User) error 
 	defer cancel()
 
 	return su.userRepository.Create(ctx, user)
+}
+
+func (su *signupUseCase) CreateAccessToken(user *domain.User, secret string, expiry int) (token string, err error) {
+	return tokenutil.CreateAccessToken(user, secret, expiry)
+}
+
+func (su *signupUseCase) CreateRefreshToken(user *domain.User, secret string, expiry int) (token string, err error) {
+	return tokenutil.CreateRefreshToken(user, secret, expiry)
 }
