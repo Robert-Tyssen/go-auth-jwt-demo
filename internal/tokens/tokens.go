@@ -1,14 +1,14 @@
-package tokenutil
+package tokens
 
 import (
 	"errors"
 	"time"
 
 	"github.com/golang-jwt/jwt/v5"
-	"github.com/robert-tyssen/go-auth-jwt-demo/pkg/domain"
+	"github.com/robert-tyssen/go-auth-jwt-demo/internal/models"
 )
 
-func CreateAccessToken(user *domain.User, secret string, expiry int) (string, error) {
+func CreateAccessToken(user *models.User, secret string, expiry int) (string, error) {
 	exp := time.Now().Add(time.Hour * time.Duration(expiry))
 
 	claims := &jwt.RegisteredClaims{
@@ -26,7 +26,7 @@ func CreateAccessToken(user *domain.User, secret string, expiry int) (string, er
 	return accessToken, nil
 }
 
-func CreateRefreshToken(user *domain.User, secret string, expiry int) (string, error) {
+func CreateRefreshToken(user *models.User, secret string, expiry int) (string, error) {
 	exp := time.Now().Add(time.Hour * time.Duration(expiry))
 
 	claims := &jwt.RegisteredClaims{
