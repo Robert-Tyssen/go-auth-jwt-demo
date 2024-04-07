@@ -23,6 +23,7 @@ func InitRouter(timeout time.Duration) *gin.Engine {
 	apiv1Public := r.Group("/api/v1")
 	{
 		apiv1Public.GET("/hello-world", helloWorldHandler)
+		InitSignupRouter(timeout, apiv1Public)
 	}
 
 	//NewSignupRouter(timeout, publicRouter)

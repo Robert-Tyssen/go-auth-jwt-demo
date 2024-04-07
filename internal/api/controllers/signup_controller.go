@@ -9,8 +9,8 @@ import (
 	"github.com/google/uuid"
 	"github.com/robert-tyssen/go-auth-jwt-demo/internal/data/repos"
 	"github.com/robert-tyssen/go-auth-jwt-demo/internal/models"
-	"github.com/robert-tyssen/go-auth-jwt-demo/internal/tokens"
-	"golang.org/x/crypto/bcrypt"
+	"github.com/robert-tyssen/go-auth-jwt-demo/internal/utils/tokens"
+	"github.com/robert-tyssen/go-auth-jwt-demo/internal/utils/password"
 )
 
 type SignupController struct {
@@ -42,7 +42,7 @@ func (sc *SignupController) Signup(c *gin.Context) {
 
 	// Use bcrypt to generate an encrypted password from the user-provided one
 	// Only the hashed password is stored in the backend
-	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(request.Password), bcrypt.DefaultCost)
+	hashedPassword, err := password.HashPassword(request.Password)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, models.ErrorResponse{Message: err.Error()})
 		return
