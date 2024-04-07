@@ -1,6 +1,8 @@
 package password
 
 import (
+	"fmt"
+
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -19,3 +21,10 @@ func ComparePasswordHash(password, hash string) bool {
 	return err == nil
 }
 
+// Validates that a password meets complexity requirements
+func ValidatePassword(password string) error {
+	if len(password) < 6 {
+		return fmt.Errorf("password must be at least 6 characters")
+	}
+	return nil
+}

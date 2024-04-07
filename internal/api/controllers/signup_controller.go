@@ -40,6 +40,12 @@ func (sc *SignupController) Signup(c *gin.Context) {
 		return
 	}
 
+	// Validate that the password meets complexity requirements
+	if err := password.ValidatePassword(request.Password); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "weak-password"})
+		return
+	}
+
 	// Use bcrypt to generate an encrypted password from the user-provided one
 	// Only the hashed password is stored in the backend
 	hashedPassword, err := password.HashPassword(request.Password)
@@ -85,7 +91,6 @@ func (sc *SignupController) Signup(c *gin.Context) {
 
 // Signin a user using email and password
 func (sc *SignupController) Signin(c *gin.Context) {
-	// TODO - implement function
 
 	_, cancel := context.WithTimeout(c, sc.timeout)
 	defer cancel()
@@ -99,16 +104,19 @@ func (sc *SignupController) Signin(c *gin.Context) {
 		return
 	}
 
+	// Get the user by email
 	user, err := sc.userRepo.GetUserByEmail(request.Email)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, models.ErrorResponse{Message: err.Error()})
 		return
 	}
 
+	// Compare the password hash with the user-provided password
 	if !password.ComparePasswordHash(request.Password, user.Password) {
 		c.JSON(http.StatusBadRequest, models.ErrorResponse{Message: "Invalid email or password"})
 		return
 	}
 
+	// TODO - implement function
 	c.JSON(http.StatusInternalServerError, "not implemented")
 }
