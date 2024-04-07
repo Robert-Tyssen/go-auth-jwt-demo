@@ -9,8 +9,8 @@ import (
 	"github.com/google/uuid"
 	"github.com/robert-tyssen/go-auth-jwt-demo/internal/data/repos"
 	"github.com/robert-tyssen/go-auth-jwt-demo/internal/models"
-	"github.com/robert-tyssen/go-auth-jwt-demo/internal/utils/tokens"
 	"github.com/robert-tyssen/go-auth-jwt-demo/internal/utils/password"
+	"github.com/robert-tyssen/go-auth-jwt-demo/internal/utils/tokens"
 )
 
 type SignupController struct {
@@ -81,4 +81,34 @@ func (sc *SignupController) Signup(c *gin.Context) {
 	// Create response and return success status code
 	response := models.SignupResponse{AccessToken: accessToken, RefreshToken: refreshToken}
 	c.JSON(http.StatusOK, response)
+}
+
+// Signin a user using email and password
+func (sc *SignupController) Signin(c *gin.Context) {
+	// TODO - implement function
+
+	_, cancel := context.WithTimeout(c, sc.timeout)
+	defer cancel()
+
+	var request models.SigninRequest
+
+	// Validate that request is properly constructed
+	err := c.ShouldBind(&request)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, models.ErrorResponse{Message: err.Error()})
+		return
+	}
+
+	user, err := sc.userRepo.GetUserByEmail(request.Email)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, models.ErrorResponse{Message: err.Error()})
+		return
+	}
+
+	if !password.ComparePasswordHash(request.Password, user.Password) {
+		c.JSON(http.StatusBadRequest, models.ErrorResponse{Message: "Invalid email or password"})
+		return
+	}
+
+	c.JSON(http.StatusInternalServerError, "not implemented")
 }

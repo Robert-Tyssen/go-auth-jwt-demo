@@ -14,7 +14,8 @@ func InitSignupRouter(timeout time.Duration, gr *gin.RouterGroup) {
 	userRepo := repos.NewUserRepository()
 	sc := controllers.NewSignupController(timeout, userRepo)
 
-	// Endpoint to signup new user with email and password
+	// Endpoints for email / password signup and signin
 	gr.POST("/signup", sc.Signup)
+	gr.POST("/signin", sc.Signin)
 
 }
