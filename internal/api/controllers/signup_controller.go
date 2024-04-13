@@ -4,6 +4,7 @@ import (
 	"context"
 	"log"
 	"net/http"
+	"strings"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -105,23 +106,40 @@ func (sc *SignupController) Signin(c *gin.Context) {
 	// Validate that request is properly constructed
 	err := c.ShouldBind(&request)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, models.ErrorResponse{Message: err.Error()})
+		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid-request"})
 		return
 	}
 
-	// Get the user by email
-	user, err := sc.userRepo.GetUserByEmail(request.Email)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, models.ErrorResponse{Message: err.Error()})
+	// Get the user by email and return an error if the user is not found
+	user, _ := sc.userRepo.GetUserByEmail(request.Email)
+	if !strings.EqualFold(user.Email, request.Email) {
+		log.Printf("User not found with email %s", request.Email)
+		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid-credentials"})
 		return
 	}
 
 	// Compare the password hash with the user-provided password
 	if !password.ComparePasswordHash(request.Password, user.Password) {
-		c.JSON(http.StatusBadRequest, models.ErrorResponse{Message: "Invalid email or password"})
+		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid-credentials"})
 		return
 	}
 
-	// TODO - implement function
-	c.JSON(http.StatusInternalServerError, "not implemented")
+	// Create access token with expiry of 1 hour
+	accessToken, err := tokens.CreateAccessToken(&user, 1)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, models.ErrorResponse{Message: err.Error()})
+		return
+	}
+
+	// Create refresh token with expiry of 2 hours
+	refreshToken, err := tokens.CreateRefreshToken(&user, 2)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, models.ErrorResponse{Message: err.Error()})
+		return
+	}
+
+	// Create response and return success status code
+	response := models.SigninResponse{AccessToken: accessToken, RefreshToken: refreshToken}
+	c.JSON(http.StatusOK, response)
 }
+
