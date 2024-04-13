@@ -2,6 +2,7 @@ package repos
 
 import (
 	"context"
+	"strings"
 
 	"github.com/robert-tyssen/go-auth-jwt-demo/internal/data/dto"
 	"github.com/robert-tyssen/go-auth-jwt-demo/internal/models"
@@ -19,12 +20,11 @@ type userRepoImpl struct {
 	userCol *mongo.Collection
 }
 
-
 // Creates a UserRepository instance for database operations on users
 func NewUserRepository(db *mongo.Client) UserRepository {
 	// Get the collection for users
 	userCol := db.Database("auth").Collection("users")
-	
+
 	// Return the repo
 	return &userRepoImpl{
 		userCol: userCol,
@@ -37,7 +37,7 @@ func (ur *userRepoImpl) CreateUser(user models.User) (string, error) {
 
 	// Create DTO for DB update
 	userDto := bson.M{
-		"email":    user.Email,
+		"email":    strings.ToLower(user.Email),
 		"password": user.Password,
 	}
 
@@ -59,7 +59,9 @@ func (ur *userRepoImpl) CreateUser(user models.User) (string, error) {
 func (ur *userRepoImpl) GetUserByEmail(email string) (models.User, error) {
 
 	// Find the user in the database
-	res := ur.userCol.FindOne(context.TODO(), bson.M{"email": email})
+	res := ur.userCol.FindOne(context.TODO(), bson.M{
+		"email": strings.ToLower(email),
+	})
 
 	// Parse the result into a UserReadDto
 	var dto = dto.UserReadDto{}
