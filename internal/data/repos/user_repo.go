@@ -3,6 +3,7 @@ package repos
 import (
 	"context"
 
+	"github.com/robert-tyssen/go-auth-jwt-demo/internal/data/dto"
 	"github.com/robert-tyssen/go-auth-jwt-demo/internal/models"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -49,7 +50,17 @@ func (ur *userRepoImpl) CreateUser(user models.User) (string, error) {
 	return id, nil
 }
 
+// Fetches a user from the database based on their email address, and returns the user
+// Returns an error if the user could not be found
 func (ur *userRepoImpl) GetUserByEmail(email string) (models.User, error) {
-	// TODO - implement function
-	return models.User{}, nil
+
+	// Find the user in the database
+	res := ur.userCol.FindOne(context.TODO(), bson.M{"email": email})
+
+	// Parse the result into a UserReadDto
+	var dto = dto.UserReadDto{}
+	err := res.Decode(&dto)
+
+	// Convert the UserReadDto to a User and return result
+	return dto.ToUser(), err
 }
