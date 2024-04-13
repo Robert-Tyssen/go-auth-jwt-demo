@@ -1,8 +1,11 @@
 package main
 
 import (
+	"log"
+	"os"
 	"time"
 
+	"github.com/joho/godotenv"
 	"github.com/robert-tyssen/go-auth-jwt-demo/internal/api/routes"
 )
 
@@ -10,8 +13,17 @@ const maxTimeoutSeconds = 2
 
 func main() {
 
-	timeout := maxTimeoutSeconds * time.Second
+	// Find .env file and load contents
+	if err := godotenv.Load(".env"); err != nil {
+		log.Fatal("Error loading .env file")
+	}
 
+	// Print a greeting
+	greeting := os.Getenv("GREETING")
+	log.Println(greeting)
+
+	// Set up the router and start the server
+	timeout := maxTimeoutSeconds * time.Second
 	r := routes.InitRouter(timeout)
 	r.Run()
 }
