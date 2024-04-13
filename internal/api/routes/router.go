@@ -6,9 +6,10 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/robert-tyssen/go-auth-jwt-demo/internal/middleware"
+	"go.mongodb.org/mongo-driver/mongo"
 )
 
-func InitRouter(timeout time.Duration) *gin.Engine {
+func InitRouter(timeout time.Duration, db *mongo.Client) *gin.Engine {
 
 	// Create top-level router without any middleware
 	r := gin.New()
@@ -23,7 +24,7 @@ func InitRouter(timeout time.Duration) *gin.Engine {
 	apiv1Public := r.Group("/api/v1")
 	{
 		apiv1Public.GET("/hello-world", helloWorldHandler)
-		InitSignupRouter(timeout, apiv1Public)
+		InitSignupRouter(timeout, apiv1Public, db)
 	}
 
 	//NewSignupRouter(timeout, publicRouter)

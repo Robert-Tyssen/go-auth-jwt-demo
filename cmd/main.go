@@ -24,7 +24,8 @@ func main() {
 	log.Println(greeting)
 
 	// Get the MongoDB client
-	if _, err := db.GetMongoClient(); err != nil {
+	mongoClient, err := db.GetMongoClient(); 
+	if err != nil {
 		log.Fatal("Failed to connect to MongoDB")
 	}
 
@@ -32,6 +33,6 @@ func main() {
 
 	// Set up the router and start the server
 	timeout := maxTimeoutSeconds * time.Second
-	r := routes.InitRouter(timeout)
+	r := routes.InitRouter(timeout, mongoClient)
 	r.Run()
 }
