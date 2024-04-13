@@ -19,9 +19,13 @@ type userRepoImpl struct {
 	userCol *mongo.Collection
 }
 
-func NewUserRepository(db *mongo.Client) UserRepository {
 
+// Creates a UserRepository instance for database operations on users
+func NewUserRepository(db *mongo.Client) UserRepository {
+	// Get the collection for users
 	userCol := db.Database("auth").Collection("users")
+	
+	// Return the repo
 	return &userRepoImpl{
 		userCol: userCol,
 	}

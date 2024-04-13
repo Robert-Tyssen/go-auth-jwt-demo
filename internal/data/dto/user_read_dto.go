@@ -5,6 +5,7 @@ import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
+// Data transfer object for reading user data from MongoDB
 type UserReadDto struct {
 	ID       primitive.ObjectID `bson:"_id"`
 	Email    string             `bson:"email"`

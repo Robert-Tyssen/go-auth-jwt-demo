@@ -54,7 +54,7 @@ func (sc *SignupController) Signup(c *gin.Context) {
 		return
 	}
 
-	// TODO - validate that the user does not already exist
+	// Validate that the user does not already exist
 	if foundUser, _ := sc.userRepo.GetUserByEmail(request.Email); foundUser.Email == request.Email {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "user-already-exists"})
 		return
