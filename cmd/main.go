@@ -26,7 +26,7 @@ func main() {
 	// Get the MongoDB client
 	mongoClient, err := db.GetMongoClient(); 
 	if err != nil {
-		log.Fatal("Failed to connect to MongoDB")
+		log.Fatal("Failed to connect to MongoDB\n", err)
 	}
 
 	log.Print("Successfully connected to MongoDB")
