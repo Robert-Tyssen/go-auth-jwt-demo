@@ -77,14 +77,14 @@ func (sc *SignupController) Signup(c *gin.Context) {
 	}
 
 	// Create access token with expiry of 1 hour
-	accessToken, err := tokens.CreateAccessToken(&user, 1)
+	accessToken, err := tokens.CreateToken(&user, 1)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, models.ErrorResponse{Message: err.Error()})
 		return
 	}
 
 	// Create refresh token with expiry of 2 hours
-	refreshToken, err := tokens.CreateRefreshToken(&user, 2)
+	refreshToken, err := tokens.CreateToken(&user, 2)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, models.ErrorResponse{Message: err.Error()})
 		return
@@ -125,14 +125,14 @@ func (sc *SignupController) Signin(c *gin.Context) {
 	}
 
 	// Create access token with expiry of 1 hour
-	accessToken, err := tokens.CreateAccessToken(&user, 1)
+	accessToken, err := tokens.CreateToken(&user, 1)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, models.ErrorResponse{Message: err.Error()})
 		return
 	}
 
 	// Create refresh token with expiry of 2 hours
-	refreshToken, err := tokens.CreateRefreshToken(&user, 2)
+	refreshToken, err := tokens.CreateToken(&user, 2)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, models.ErrorResponse{Message: err.Error()})
 		return
@@ -142,4 +142,3 @@ func (sc *SignupController) Signin(c *gin.Context) {
 	response := models.SigninResponse{AccessToken: accessToken, RefreshToken: refreshToken}
 	c.JSON(http.StatusOK, response)
 }
-
