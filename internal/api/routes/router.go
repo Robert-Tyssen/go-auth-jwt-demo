@@ -27,12 +27,11 @@ func InitRouter(timeout time.Duration, db *mongo.Client) *gin.Engine {
 		InitSignupRouter(timeout, apiv1Public, db)
 	}
 
-	//NewSignupRouter(timeout, publicRouter)
-
 	// All protected APIs declared here (require auth)
-	apiv1Private := r.Group("/api/v1")
+	apiv1Private := r.Group("/api/v1", middleware.ValidateToken)
 	{
 		apiv1Private.GET("/test", middleware.NotImplemented)
+		apiv1Private.GET("/hello-world-private", helloWorldPrivateHandler)
 	}
 
 	return r
@@ -41,4 +40,8 @@ func InitRouter(timeout time.Duration, db *mongo.Client) *gin.Engine {
 
 func helloWorldHandler(c *gin.Context) {
 	c.JSON(http.StatusAccepted, "Hello World, from Go JWT Demo!")
+}
+
+func helloWorldPrivateHandler(c *gin.Context) {
+	c.JSON(http.StatusAccepted, "Hello World, from Go JWT Demo! This is a private route.")
 }
