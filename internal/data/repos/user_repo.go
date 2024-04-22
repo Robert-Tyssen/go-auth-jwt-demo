@@ -2,6 +2,7 @@ package repos
 
 import (
 	"context"
+	"log"
 	"strings"
 
 	"github.com/robert-tyssen/go-auth-jwt-demo/internal/data/dto"
@@ -22,13 +23,17 @@ type userRepoImpl struct {
 
 // Creates a UserRepository instance for database operations on users
 func NewUserRepository(db *mongo.Client) UserRepository {
-	// Get the collection for users
-	userCol := db.Database("auth").Collection("users")
+
+	// Create a new user repository instance
+	repo := &userRepoImpl{
+		userCol: db.Database("auth").Collection("users"),
+	}
+
+	// Setup indexes
+	repo.setupIndexes()
 
 	// Return the repo
-	return &userRepoImpl{
-		userCol: userCol,
-	}
+	return repo
 }
 
 // Creates a new user in the database, and returns the ID of the new user
@@ -69,4 +74,18 @@ func (ur *userRepoImpl) GetUserByEmail(email string) (models.User, error) {
 
 	// Convert the UserReadDto to a User and return result
 	return dto.ToUser(), err
+}
+
+
+// This function sets up the necessary indexes for collections
+// used by the user repository
+func (ur *userRepoImpl) setupIndexes() {
+	// Create index on email field
+	_, err := ur.userCol.Indexes().CreateOne(context.Background(), mongo.IndexModel{
+		Keys: bson.M{"email": 1}, Options: nil,
+	})
+
+	if err != nil {
+		log.Fatal(err)
+	}
 }
