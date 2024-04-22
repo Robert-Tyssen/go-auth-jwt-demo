@@ -2,6 +2,7 @@ package tokens
 
 import (
 	"errors"
+	"fmt"
 	"os"
 	"time"
 
@@ -35,16 +36,23 @@ func CreateToken(user *models.User, expiryHours int) (string, error) {
 	return accessToken, nil
 }
 
-func TokenIsValid(accessToken string) (bool, error) {
-	return tokenIsValid(accessToken, getAccessTokenSecret())
-}
-
-func tokenIsValid(requestToken string, secret string) (bool, error) {
+func TokenIsValid(tokenString string) (bool, error) {
+	// Get the secret
+	secret := getAccessTokenSecret()
 
 	// Parse the token
-	token, err := jwt.ParseWithClaims(requestToken, &jwt.RegisteredClaims{}, func(token *jwt.Token) (interface{}, error) {
-		return []byte(secret), errors.New("unexpected-signing-method")
-	})
+	token, err := jwt.ParseWithClaims(
+		tokenString,
+		&jwt.RegisteredClaims{},
+		func(token *jwt.Token) (interface{}, error) {
+			// Check the signing method
+			if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
+				return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
+			}
+			// Return the secret
+			return []byte(secret), nil
+		},
+	)
 
 	// Token parsing error
 	if err != nil {
